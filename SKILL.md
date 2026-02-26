@@ -1,12 +1,16 @@
 ---
 name: detect-file-type-local
-version: 0.1.0
+version: 0.1.1
 description: Local, offline AI-powered file type detection — no network, no API keys
-homepage: https://github.com/detect-file-type-skill/detect-file-type-skill
+homepage: https://github.com/pgeraghty/openclaw-detect-file-type-local
 metadata:
   openclaw:
     requires:
       bins: [python3]
+    install:
+      - kind: uv
+        package: detect-file-type-local
+        bins: [detect-file-type-local]
 ---
 
 # detect-file-type-local
@@ -25,10 +29,14 @@ metadata:
 ## Installation
 
 ```bash
-pip install -e /path/to/detect-file-type-skill
+pip install detect-file-type-local
 ```
 
-OpenClaw auto-install metadata is intentionally omitted until a public package artifact is published and installable.
+From source:
+
+```bash
+pip install -e /path/to/detect-file-type-skill
+```
 
 ## Usage
 

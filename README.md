@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/pgeraghty/openclaw-detect-file-type-local/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pgeraghty/openclaw-detect-file-type-local/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/github/license/pgeraghty/openclaw-detect-file-type-local)](LICENSE)
+![PyPI](https://img.shields.io/pypi/v/detect-file-type-local)
 ![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-blue)
 ![Inference: Local/Offline](https://img.shields.io/badge/inference-local%20%7C%20offline-success)
 ![API Keys](https://img.shields.io/badge/api_keys-none-success)
@@ -22,7 +23,7 @@ Wraps [Google Magika](https://github.com/google/magika) to provide ML-based file
 ## Quick Start
 
 ```bash
-pip install -e .
+pip install detect-file-type-local
 
 # Detect a single file
 detect-file-type-local document.pdf
@@ -68,7 +69,7 @@ image/jpeg
 
 See [SKILL.md](SKILL.md) for the OpenClaw skill definition, including structured output schemas and usage guidance for LLM integration.
 
-Note: this skill currently uses manual local installation (`pip install -e ...`). Auto-install metadata will be added after a public package artifact is published and resolvable.
+OpenClaw skill metadata now auto-installs from PyPI package `detect-file-type-local`.
 
 ## Development
 
