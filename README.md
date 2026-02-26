@@ -1,5 +1,11 @@
 # detect-file-type-local
 
+[![CI](https://github.com/pgeraghty/openclaw-detect-file-type-local/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pgeraghty/openclaw-detect-file-type-local/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/pgeraghty/openclaw-detect-file-type-local)](LICENSE)
+![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-blue)
+![Inference: Local/Offline](https://img.shields.io/badge/inference-local%20%7C%20offline-success)
+![API Keys](https://img.shields.io/badge/api_keys-none-success)
+
 An [OpenClaw](https://openclaw.org) skill for AI-powered local file type detection.
 
 Wraps [Google Magika](https://github.com/google/magika) to provide ML-based file type identification that runs entirely offline. No API keys, no network calls — just local inference on an embedded ONNX model.
