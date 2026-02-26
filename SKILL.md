@@ -1,0 +1,117 @@
+---
+name: detect-file-type
+version: 0.1.0
+description: Local, offline AI-powered file type detection — no network, no API keys
+homepage: https://github.com/detect-file-type-skill/detect-file-type-skill
+metadata:
+  openclaw:
+    requires:
+      bins: [python3]
+---
+
+# detect-file-type
+
+**Local-only, offline file type detection.** Uses an embedded ML model (Google Magika) to identify 214 file types by content — no network calls, no API keys, no data leaves the machine. All inference runs on-device via ONNX Runtime.
+
+## When to Use
+
+- Identify unknown files by their content (not just extension) — **locally, without sending data anywhere**
+- Verify that a file's extension matches its actual content
+- Check MIME types before processing uploads or downloads
+- Triage files in a directory by type
+- Detect extension mismatches (e.g., a `.png` that's actually text)
+- When privacy matters — file bytes never leave the local machine
+
+## Installation
+
+```bash
+pip install -e /path/to/detect-file-type-skill
+```
+
+OpenClaw auto-install metadata is intentionally omitted until a public package artifact is published and installable.
+
+## Usage
+
+### Single file
+```bash
+detect-file-type path/to/file
+```
+
+### Multiple files
+```bash
+detect-file-type file1.pdf file2.png file3.zip
+```
+
+### Recursive directory scan
+```bash
+detect-file-type --recursive ./uploads/
+```
+
+### From stdin
+```bash
+cat mystery_file | detect-file-type -
+```
+
+### Output formats
+```bash
+detect-file-type --json file.pdf    # JSON (default)
+detect-file-type --human file.pdf   # Human-readable
+detect-file-type --mime file.pdf    # Bare MIME type
+```
+
+### Programmatic (Python)
+```python
+python -m detect_file_type path/to/file
+```
+
+## Output Schema (JSON)
+
+Single file returns an object; multiple files return an array.
+
+```json
+{
+  "path": "document.pdf",
+  "label": "pdf",
+  "mime_type": "application/pdf",
+  "score": 0.99,
+  "group": "document",
+  "description": "PDF document",
+  "is_text": false
+}
+```
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `path` | string | Input path (or `-` for stdin) |
+| `label` | string | Detected file type label (e.g., `pdf`, `png`, `python`) |
+| `mime_type` | string | MIME type (e.g., `application/pdf`) |
+| `score` | float | Confidence score (0.0–1.0) |
+| `group` | string | Category (e.g., `document`, `image`, `code`) |
+| `description` | string | Human-readable description |
+| `is_text` | bool | Whether the file is text-based |
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | All files detected successfully |
+| 1 | Fatal error (no results produced) |
+| 2 | Partial failure (some files failed, some succeeded) |
+
+## Error Handling
+
+Errors are printed to stderr. Common cases:
+- **File not found**: `error: path/to/file: No such file or directory`
+- **Permission denied**: `error: path/to/file: Permission denied`
+- **Not a regular file**: `error: path/to/dir: Not a regular file`
+
+When processing multiple files, detection continues for remaining files even if some fail.
+
+## Limitations
+
+- Stdin reads are capped at 1 MB
+- Very small files (< ~16 bytes) may produce low-confidence results
+- Empty files are detected as `empty`
+- Detection is content-based — file extensions are ignored
