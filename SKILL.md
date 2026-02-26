@@ -1,7 +1,7 @@
 ---
 name: detect-file-type-local
-version: 0.1.2
-description: Local, offline AI-powered file type detection for masquerading/polyglot defense
+version: 0.1.3
+description: Local, offline AI-powered file type detection — no network, no API keys
 homepage: https://github.com/pgeraghty/openclaw-detect-file-type-local
 metadata:
   openclaw:
