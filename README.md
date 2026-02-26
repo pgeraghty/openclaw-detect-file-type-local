@@ -78,6 +78,16 @@ pytest tests/ -v
 ruff check .
 ```
 
+## Release
+
+PyPI publishing is automated via GitHub Actions (`Publish Python Package` workflow):
+
+1. Create a GitHub release with a tag matching package version (for example, `v0.1.0`)
+2. Workflow builds and validates artifacts
+3. Workflow publishes to PyPI via trusted publishing
+
+After PyPI release, update and republish the ClawHub skill metadata to enable auto-install from `detect-file-type-local`.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
