@@ -2,7 +2,7 @@
 
 ## Security Posture
 
-**detect-file-type** is a fully offline, read-only file type detection tool. It:
+**detect-file-type-local** is a fully offline, read-only file type detection tool. It:
 
 - **Makes no network calls** — all inference runs locally via an embedded ONNX model
 - **Never writes files** — output goes only to stdout/stderr

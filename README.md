@@ -1,4 +1,4 @@
-# detect-file-type
+# detect-file-type-local
 
 An [OpenClaw](https://openclaw.org) skill for AI-powered local file type detection.
 
@@ -19,17 +19,19 @@ Wraps [Google Magika](https://github.com/google/magika) to provide ML-based file
 pip install -e .
 
 # Detect a single file
-detect-file-type document.pdf
+detect-file-type-local document.pdf
 
 # Batch detect
-detect-file-type --human *.pdf *.png
+detect-file-type-local --human *.pdf *.png
 
 # Recursive directory scan
-detect-file-type -r ./uploads/
+detect-file-type-local -r ./uploads/
 
 # Pipe from stdin
-cat mystery_file | detect-file-type -
+cat mystery_file | detect-file-type-local -
 ```
+
+Compatibility alias: `detect-file-type` remains available.
 
 ## Output Formats
 

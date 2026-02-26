@@ -1,5 +1,5 @@
 ---
-name: detect-file-type
+name: detect-file-type-local
 version: 0.1.0
 description: Local, offline AI-powered file type detection — no network, no API keys
 homepage: https://github.com/detect-file-type-skill/detect-file-type-skill
@@ -9,7 +9,7 @@ metadata:
       bins: [python3]
 ---
 
-# detect-file-type
+# detect-file-type-local
 
 **Local-only, offline file type detection.** Uses an embedded ML model (Google Magika) to identify 214 file types by content — no network calls, no API keys, no data leaves the machine. All inference runs on-device via ONNX Runtime.
 
@@ -34,30 +34,32 @@ OpenClaw auto-install metadata is intentionally omitted until a public package a
 
 ### Single file
 ```bash
-detect-file-type path/to/file
+detect-file-type-local path/to/file
 ```
 
 ### Multiple files
 ```bash
-detect-file-type file1.pdf file2.png file3.zip
+detect-file-type-local file1.pdf file2.png file3.zip
 ```
 
 ### Recursive directory scan
 ```bash
-detect-file-type --recursive ./uploads/
+detect-file-type-local --recursive ./uploads/
 ```
 
 ### From stdin
 ```bash
-cat mystery_file | detect-file-type -
+cat mystery_file | detect-file-type-local -
 ```
 
 ### Output formats
 ```bash
-detect-file-type --json file.pdf    # JSON (default)
-detect-file-type --human file.pdf   # Human-readable
-detect-file-type --mime file.pdf    # Bare MIME type
+detect-file-type-local --json file.pdf    # JSON (default)
+detect-file-type-local --human file.pdf   # Human-readable
+detect-file-type-local --mime file.pdf    # Bare MIME type
 ```
+
+Compatibility alias: `detect-file-type` remains available.
 
 ### Programmatic (Python)
 ```python

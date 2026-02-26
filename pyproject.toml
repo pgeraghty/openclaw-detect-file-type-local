@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "detect-file-type"
+name = "detect-file-type-local"
 version = "0.1.0"
-description = "AI-powered local file type detection — an OpenClaw skill powered by Google Magika"
+description = "Security-focused local file type detection powered by Google Magika"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.8"
@@ -20,6 +20,7 @@ dev = [
 ]
 
 [project.scripts]
+detect-file-type-local = "detect_file_type.cli:main"
 detect-file-type = "detect_file_type.cli:main"
 
 [tool.ruff]
