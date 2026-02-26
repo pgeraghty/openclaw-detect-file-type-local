@@ -30,7 +30,7 @@ jobs:
 
       - name: Run smoke checks
         run: |
-          /tmp/dft-release-smoke/bin/detect-file-type-local --mime tests/fixtures/sample.png
-          /tmp/dft-release-smoke/bin/detect-file-type --mime tests/fixtures/sample.zip
-          printf 'hello from ci\n' | /tmp/dft-release-smoke/bin/detect-file-type-local - > /tmp/dft-release-smoke/stdin.json
+          /tmp/dft-release-smoke/bin/detect_file_type --mime tests/fixtures/sample.png
+          /tmp/dft-release-smoke/bin/detect_file_type --mime tests/fixtures/sample.zip
+          printf 'hello from ci\n' | /tmp/dft-release-smoke/bin/detect_file_type - > /tmp/dft-release-smoke/stdin.json
           grep -q '"path": "-"' /tmp/dft-release-smoke/stdin.json

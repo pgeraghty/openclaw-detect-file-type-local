@@ -1,4 +1,4 @@
-# detect-file-type-local
+# Detect File Type - Local
 
 [![CI](https://github.com/pgeraghty/openclaw-detect-file-type-local/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pgeraghty/openclaw-detect-file-type-local/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/github/license/pgeraghty/openclaw-detect-file-type-local)](LICENSE)
@@ -38,22 +38,20 @@ Related references:
 pip install detect-file-type-local
 
 # Detect a single file
-detect-file-type-local document.pdf
+detect_file_type document.pdf
 
 # Batch detect
-detect-file-type-local --human *.pdf *.png
+detect_file_type --human *.pdf *.png
 
 # Recursive directory scan
-detect-file-type-local -r ./uploads/
+detect_file_type -r ./uploads/
 
 # Pipe from stdin
-cat mystery_file | detect-file-type-local -
+cat mystery_file | detect_file_type -
 
 # Stdin fast path (best effort): read only first 1 MB
-cat mystery_file | detect-file-type-local --stdin-mode head --stdin-max-bytes 1048576 -
+cat mystery_file | detect_file_type --stdin-mode head --stdin-max-bytes 1048576 -
 ```
-
-Compatibility alias: `detect-file-type` remains available.
 
 ## Output Formats
 
@@ -100,7 +98,7 @@ ruff check .
 
 PyPI publishing is automated via GitHub Actions (`Publish Python Package` workflow):
 
-1. Create a GitHub release with a tag matching package version (for example, `v0.1.0`)
+1. Create a GitHub release with a tag matching package version (for example, `v0.2.0`)
 2. Workflow builds and validates artifacts
 3. Workflow publishes to PyPI via trusted publishing
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "detect-file-type-local"
-version = "0.1.2"
+version = "0.2.0"
 description = "Security-focused local file type detection powered by Google Magika"
 readme = "README.md"
 license = "MIT"
@@ -20,8 +20,7 @@ dev = [
 ]
 
 [project.scripts]
-detect-file-type-local = "detect_file_type.cli:main"
-detect-file-type = "detect_file_type.cli:main"
+detect_file_type = "detect_file_type.cli:main"
 
 [tool.ruff]
 target-version = "py38"
