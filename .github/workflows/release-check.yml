@@ -1,0 +1,36 @@
+name: Release Check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Build distributions
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+
+      - name: Install built wheel in clean venv
+        run: |
+          python -m venv /tmp/dft-release-smoke
+          /tmp/dft-release-smoke/bin/python -m pip install --upgrade pip
+          /tmp/dft-release-smoke/bin/python -m pip install dist/detect_file_type_local-*.whl
+
+      - name: Run smoke checks
+        run: |
+          /tmp/dft-release-smoke/bin/detect-file-type-local --mime tests/fixtures/sample.png
+          /tmp/dft-release-smoke/bin/detect-file-type --mime tests/fixtures/sample.zip
+          printf 'hello from ci\n' | /tmp/dft-release-smoke/bin/detect-file-type-local - > /tmp/dft-release-smoke/stdin.json
+          grep -q '"path": "-"' /tmp/dft-release-smoke/stdin.json
