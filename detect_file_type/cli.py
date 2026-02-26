@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import List
 
@@ -17,7 +18,16 @@ from detect_file_type.formatter import (
     result_to_dict,
 )
 
-STDIN_MAX_BYTES = 1_048_576  # 1 MB
+STDIN_HEAD_MAX_BYTES = 1_048_576  # 1 MB (head mode only)
+STDIN_SPOOL_CHUNK_BYTES = 65_536
+
+
+def positive_int(value: str) -> int:
+    """Argparse type for strictly positive integers."""
+    parsed = int(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("value must be > 0")
+    return parsed
 
 
 def collect_paths(args_paths: List[str], recursive: bool) -> List[str]:
@@ -37,7 +47,38 @@ def collect_paths(args_paths: List[str], recursive: bool) -> List[str]:
     return expanded
 
 
-def detect_files(magika_instance: Magika, paths: List[str]) -> tuple:
+def identify_stdin_spool(magika_instance: Magika) -> dict:
+    """Identify stdin by spooling to a temp file, then using identify_path."""
+    fd, temp_path = tempfile.mkstemp(prefix="detect-file-type-stdin-", suffix=".bin")
+    try:
+        with os.fdopen(fd, "wb") as tmp:
+            while True:
+                chunk = sys.stdin.buffer.read(STDIN_SPOOL_CHUNK_BYTES)
+                if not chunk:
+                    break
+                tmp.write(chunk)
+        result = magika_instance.identify_path(Path(temp_path))
+        return result_to_dict("-", result)
+    finally:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+
+
+def identify_stdin_head(magika_instance: Magika, max_bytes: int) -> tuple[dict, bool]:
+    """Identify stdin by reading the first max_bytes bytes only."""
+    data = sys.stdin.buffer.read(max_bytes)
+    result = magika_instance.identify_bytes(data)
+    return result_to_dict("-", result), len(data) == max_bytes
+
+
+def detect_files(
+    magika_instance: Magika,
+    paths: List[str],
+    stdin_mode: str,
+    stdin_max_bytes: int,
+) -> tuple:
     """Detect file types. Returns (results_list, had_errors)."""
     results = []
     had_errors = False
@@ -53,9 +94,16 @@ def detect_files(magika_instance: Magika, paths: List[str]) -> tuple:
     elif len(stdin_indices) == 1:
         idx = stdin_indices[0]
         try:
-            data = sys.stdin.buffer.read(STDIN_MAX_BYTES)
-            result = magika_instance.identify_bytes(data)
-            results.append((idx, result_to_dict("-", result)))
+            if stdin_mode == "head":
+                result, capped = identify_stdin_head(magika_instance, stdin_max_bytes)
+                if capped:
+                    print(
+                        "warning: stdin head mode reached max bytes; trailing bytes were ignored",
+                        file=sys.stderr,
+                    )
+            else:
+                result = identify_stdin_spool(magika_instance)
+            results.append((idx, result))
         except Exception as e:
             print(f"error: stdin: {e}", file=sys.stderr)
             had_errors = True
@@ -117,6 +165,18 @@ def main(argv: List[str] | None = None) -> None:
     parser.add_argument(
         "--recursive", "-r", action="store_true", help="Recurse into directories"
     )
+    parser.add_argument(
+        "--stdin-mode",
+        choices=["spool", "head"],
+        default="spool",
+        help="How to process '-' stdin input (default: spool)",
+    )
+    parser.add_argument(
+        "--stdin-max-bytes",
+        type=positive_int,
+        default=STDIN_HEAD_MAX_BYTES,
+        help=f"Max stdin bytes in head mode (default: {STDIN_HEAD_MAX_BYTES})",
+    )
     parser.set_defaults(format="json")
 
     args = parser.parse_args(argv)
@@ -127,7 +187,12 @@ def main(argv: List[str] | None = None) -> None:
         sys.exit(1)
 
     magika_instance = Magika()
-    results, had_errors = detect_files(magika_instance, paths)
+    results, had_errors = detect_files(
+        magika_instance,
+        paths,
+        stdin_mode=args.stdin_mode,
+        stdin_max_bytes=args.stdin_max_bytes,
+    )
 
     if not results:
         sys.exit(1)

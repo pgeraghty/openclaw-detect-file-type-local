@@ -18,7 +18,19 @@ Wraps [Google Magika](https://github.com/google/magika) to provide ML-based file
 - **Fast** — only reads the bytes needed for classification
 - **Batch support** — process multiple files or entire directories
 - **Multiple output formats** — JSON, human-readable, bare MIME type
-- **Stdin support** — pipe content directly
+- **Security-focused triage** — detect extension/content mismatch and suspicious polyglot content
+- **Stdin support** — default mode spools and classifies like file-path mode
+
+## Security Use Cases
+
+- Catch extension masquerading (`invoice.pdf.exe`, `report.xlsx.lnk`) before execution or ingestion.
+- Detect content/extension mismatch in upload and download pipelines.
+- Flag suspicious polyglot payloads where one file can be parsed as multiple formats (for example PDF/ZIP or PDF/HTA-style delivery chains).
+- Keep all analysis local for sensitive data workflows.
+
+Related references:
+- [MITRE ATT&CK: Masquerading](https://attack.mitre.org/techniques/T1036/)
+- [Proofpoint: Call It What You Want, Threat Actor Delivers Highly Targeted Multistage Polyglot](https://www.proofpoint.com/us/blog/threat-insight/call-it-what-you-want-threat-actor-delivers-highly-targeted-multistage-polyglot)
 
 ## Quick Start
 
@@ -36,6 +48,9 @@ detect-file-type-local -r ./uploads/
 
 # Pipe from stdin
 cat mystery_file | detect-file-type-local -
+
+# Stdin fast path (best effort): read only first 1 MB
+cat mystery_file | detect-file-type-local --stdin-mode head --stdin-max-bytes 1048576 -
 ```
 
 Compatibility alias: `detect-file-type` remains available.
@@ -70,6 +85,8 @@ image/jpeg
 See [SKILL.md](SKILL.md) for the OpenClaw skill definition, including structured output schemas and usage guidance for LLM integration.
 
 OpenClaw skill metadata now auto-installs from PyPI package `detect-file-type-local`.
+
+Stdin note: default `--stdin-mode spool` writes stdin to a temporary file and uses Magika path-based detection so begin/end file features are handled consistently with normal file input. `--stdin-mode head` is available as an explicit speed tradeoff.
 
 ## Development
 

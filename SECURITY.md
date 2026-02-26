@@ -5,10 +5,11 @@
 **detect-file-type-local** is a fully offline, read-only file type detection tool. It:
 
 - **Makes no network calls** — all inference runs locally via an embedded ONNX model
-- **Never writes files** — output goes only to stdout/stderr
+- **Does not modify user files** — output goes only to stdout/stderr
+- **Uses an ephemeral temp file for stdin (default mode)** — removed after classification
 - **Never executes file content** — only raw bytes are read for classification
 - **Runs with caller permissions** — never escalates privileges
-- **Caps stdin reads at 1 MB** — prevents memory exhaustion from piped input
+- **Supports explicit stdin head mode cap** (`--stdin-mode head --stdin-max-bytes N`)
 
 ## Threat Model
 
@@ -16,7 +17,8 @@
 |--------|------------|
 | Malicious file content | Magika processes raw bytes only; no parsing, rendering, or execution |
 | Supply chain compromise | Magika version pinned to `>=1.0.0,<2.0.0`; users can verify with `pip hash` |
-| Memory exhaustion via stdin | Stdin reads capped at 1 MB |
+| Memory exhaustion via stdin | Default stdin spools to disk; optional head mode caps in-memory bytes |
+| Disk exhaustion via unbounded stdin stream | Operational controls should limit untrusted stream sizes before invoking the tool |
 | Path traversal | Paths passed directly to OS open; no path manipulation performed |
 | Privilege escalation | Tool runs entirely in user space with caller's permissions |
 

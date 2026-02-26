@@ -144,6 +144,41 @@ class TestStdin:
         assert data["path"] == "-"
         assert data["group"] == "text"
 
+    def test_stdin_spool_mode_explicit(self):
+        result = run_cli("--stdin-mode", "spool", "-", stdin_data=b"plain text from spool mode\n")
+        assert result.returncode == 0
+        data = json.loads(result.stdout)
+        assert data["path"] == "-"
+        assert data["group"] == "text"
+
+    def test_stdin_head_mode_warns_when_capped(self):
+        result = run_cli(
+            "--stdin-mode",
+            "head",
+            "--stdin-max-bytes",
+            "32",
+            "-",
+            stdin_data=b"A" * 128,
+        )
+        assert result.returncode == 0
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        assert "stdin head mode reached max bytes" in stderr
+        data = json.loads(result.stdout)
+        assert data["path"] == "-"
+
+    def test_stdin_head_mode_no_warning_when_under_cap(self):
+        result = run_cli(
+            "--stdin-mode",
+            "head",
+            "--stdin-max-bytes",
+            "4096",
+            "-",
+            stdin_data=b"short stdin payload",
+        )
+        assert result.returncode == 0
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        assert "stdin head mode reached max bytes" not in stderr
+
     def test_multiple_stdin_inputs_are_rejected(self):
         result = run_cli("-", "-", stdin_data=b"hello from stdin\n" * 20)
         assert result.returncode == 1

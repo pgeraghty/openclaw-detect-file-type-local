@@ -1,7 +1,7 @@
 ---
 name: detect-file-type-local
 version: 0.1.1
-description: Local, offline AI-powered file type detection — no network, no API keys
+description: Local, offline AI-powered file type detection for masquerading/polyglot defense
 homepage: https://github.com/pgeraghty/openclaw-detect-file-type-local
 metadata:
   openclaw:
@@ -23,7 +23,8 @@ metadata:
 - Verify that a file's extension matches its actual content
 - Check MIME types before processing uploads or downloads
 - Triage files in a directory by type
-- Detect extension mismatches (e.g., a `.png` that's actually text)
+- Detect extension mismatches and masquerading (e.g., `.pdf.exe`, `.xlsx.lnk`)
+- Flag suspicious polyglot-style payloads (for example PDF/ZIP or PDF/HTA-style chains)
 - When privacy matters — file bytes never leave the local machine
 
 ## Installation
@@ -58,6 +59,9 @@ detect-file-type-local --recursive ./uploads/
 ### From stdin
 ```bash
 cat mystery_file | detect-file-type-local -
+
+# Optional best-effort fast path (head only)
+cat mystery_file | detect-file-type-local --stdin-mode head --stdin-max-bytes 1048576 -
 ```
 
 ### Output formats
@@ -121,7 +125,13 @@ When processing multiple files, detection continues for remaining files even if 
 
 ## Limitations
 
-- Stdin reads are capped at 1 MB
+- Default stdin mode (`spool`) writes stdin to a temporary file and uses Magika path detection.
+- `--stdin-mode head` is best effort and may miss trailing-byte signatures.
 - Very small files (< ~16 bytes) may produce low-confidence results
 - Empty files are detected as `empty`
 - Detection is content-based — file extensions are ignored
+
+## Security Context
+
+- [MITRE ATT&CK: Masquerading](https://attack.mitre.org/techniques/T1036/)
+- [Proofpoint: Call It What You Want, Threat Actor Delivers Highly Targeted Multistage Polyglot](https://www.proofpoint.com/us/blog/threat-insight/call-it-what-you-want-threat-actor-delivers-highly-targeted-multistage-polyglot)
